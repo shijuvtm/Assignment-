@@ -1,0 +1,8 @@
+flask
+flask_pymongo
+fastapi
+uvicorn
+motor
+werkzeug
+pyjwt
+python-dotenv
