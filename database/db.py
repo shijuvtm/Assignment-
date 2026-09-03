@@ -1,12 +1,23 @@
 import os
 from pymongo import MongoClient
+from pymongo.errors import ConnectionFailure
 from dotenv import load_dotenv
+
 load_dotenv()
 
-Mongo_url=os.getenv("MONGO_URI")
-Database_name="edubot1"
+mongo_url = os.getenv("MONGO_URI")
+database_name = "edubot1"
 
-client=MongoClient(Mongo_url)
-db=client[Database_name]
-prompts=db["prompt"]
-history=db["history"]
+if not mongo_url:
+    raise ValueError("MONGO_URI environment variable is not set")
+
+try:
+    client = MongoClient(mongo_url, serverSelectionTimeoutMS=5000)
+    client.admin.command('ping')
+    db = client[database_name]
+    prompts = db["prompt"]
+    history = db["history"]
+except ConnectionFailure as e:
+    raise ConnectionFailure(f"Failed to connect to MongoDB: {e}")
+except Exception as e:
+    raise Exception(f"Database initialization error: {e}")
